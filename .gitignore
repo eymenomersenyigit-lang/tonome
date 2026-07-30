@@ -1,0 +1,30 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+*.userprefs
+packages/
+*.nupkg
+
+## Visual Studio
+.vs/
+*.csproj.user
+*.dbmdl
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## macOS
+.DS_Store
+
+## Linux
+*.so
+
+## Build artifacts
+build/
+
+## Logs
+*.log

@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Tonome.Boot/Tonome.Boot.csproj" />
+    <Project Path="src/Tonome.Compositor/Tonome.Compositor.csproj" />
+    <Project Path="src/Tonome.Demo/Tonome.Demo.csproj" />
+    <Project Path="src/Tonome.Framework/Tonome.Framework.csproj" />
+    <Project Path="src/Tonome.Settings/Tonome.Settings.csproj" />
+    <Project Path="src/Tonome.Shell/Tonome.Shell.csproj" />
+  </Folder>
+</Solution>
