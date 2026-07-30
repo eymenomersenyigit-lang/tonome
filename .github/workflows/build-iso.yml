@@ -93,18 +93,115 @@ jobs:
         run: |
           set -e
           cd "$GITHUB_WORKSPACE"
+
+          # Create local repo directory
           mkdir -p /repo/tonome/x86_64
-          for pkgdir in packages/*/; do
-            [ -d "$pkgdir" ] || continue
-            (cd "$pkgdir" && makepkg -s --noconfirm)
-            cp "$pkgdir"/*.pkg.tar.zst /repo/tonome/x86_64/
-          done
-          repo-add /repo/tonome/x86_64/tonome.db.tar.gz /repo/tonome/x86_64/*.pkg.tar.zst
+
+          # Helper: create a .pkg.tar.zst from a directory
+          create_package() {
+            local pkgname="$1" pkgver="$2" pkgrel="$3" pkgdesc="$4"
+            local pkgdir="/tmp/pkg/$pkgname"
+            mkdir -p "$pkgdir"
+            shift 4
+            # Copy paths passed as remaining arguments (src -> dst pairs)
+            local args=("$@")
+            for ((i=0; i<${#args[@]}; i+=2)); do
+              local src="${args[i]}" dst="${args[i+1]}"
+              mkdir -p "$(dirname "$pkgdir$dst")"
+              cp -r "$src" "$pkgdir$dst"
+            done
+
+            # Generate .PKGINFO
+            local size=$({ du -sb "$pkgdir" 2>/dev/null || stat --printf='%s' "$pkgdir"; } | awk '{print $1}')
+            cat > "$pkgdir/.PKGINFO" <<EOF
+pkgname = $pkgname
+pkgver = $pkgver-$pkgrel
+pkgdesc = $pkgdesc
+url = https://github.com/eymenomersenyigit-lang/tonome
+builddate = $(date +%s)
+packager = Tonome CI
+size = $size
+arch = x86_64
+license = GPL3
+EOF
+
+            # Create .INSTALL script if exists
+            if [ -f "${pkgdir}.install" ]; then
+              mv "${pkgdir}.install" "$pkgdir/.INSTALL"
+            fi
+
+            # Create the archive
+            cd /tmp/pkg
+            tar --zstd -cf "/repo/tonome/x86_64/$pkgname-$pkgver-$pkgrel-x86_64.pkg.tar.zst" \
+              --owner=0 --group=0 "$pkgname"
+            rm -rf "$pkgdir"
+            cd "$GITHUB_WORKSPACE"
+          }
+
+          # --- Package: tonome-desktop ---
+          create_package "tonome-desktop" "0.1.0" "1" "Tonome Desktop core framework" \
+            "build/framework" "/usr/lib/tonome/framework" \
+            "build/compositor" "/usr/lib/tonome/compositor" \
+            "build/shell" "/usr/lib/tonome/shell" \
+            "build/settings" "/usr/lib/tonome/settings"
+
+          # --- Package: tonome-session (with launcher) ---
+          local session_pkg="/tmp/pkg/tonome-session"
+          rm -rf "$session_pkg"
+          mkdir -p "$session_pkg/usr/lib/tonome/session"
+          cp -r build/session/* "$session_pkg/usr/lib/tonome/session/"
+          mkdir -p "$session_pkg/usr/bin"
+          cat > "$session_pkg/usr/bin/tonome-session" <<'SEOF'
+#!/bin/bash
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=tonome
+export XDG_CURRENT_DESKTOP=to[no]ME!
+export GTK_USE_PORTAL=1
+exec /usr/lib/tonome/session/Tonome.Session "$@"
+SEOF
+          chmod +x "$session_pkg/usr/bin/tonome-session"
+          mkdir -p "$session_pkg/usr/share/wayland-sessions"
+          cat > "$session_pkg/usr/share/wayland-sessions/tonome.desktop" <<'DEOF'
+[Desktop Entry]
+Name=to[no]ME!
+Comment=Tonome Desktop Session
+Exec=/usr/bin/tonome-session
+Type=Application
+DEOF
+          local session_size=$({ du -sb "$session_pkg" 2>/dev/null || stat --printf='%s' "$session_pkg"; } | awk '{print $1}')
+          cat > "$session_pkg/.PKGINFO" <<EOF
+pkgname = tonome-session
+pkgver = 0.1.0-1
+pkgdesc = Tonome Desktop session manager
+url = https://github.com/eymenomersenyigit-lang/tonome
+builddate = $(date +%s)
+packager = Tonome CI
+size = $session_size
+arch = x86_64
+license = GPL3
+depend = tonome-desktop
+EOF
+          cd /tmp/pkg
+          tar --zstd -cf "/repo/tonome/x86_64/tonome-session-0.1.0-1-x86_64.pkg.tar.zst" \
+            --owner=0 --group=0 "tonome-session"
+          rm -rf "$session_pkg"
+
+          # Initialize repo database
+          cd /repo/tonome/x86_64
+          repo-add tonome.db.tar.gz *.pkg.tar.zst
+          cd "$GITHUB_WORKSPACE"
 
       - name: Build ISO
         shell: bash
         run: |
+          set -e
           cd "$GITHUB_WORKSPACE"
+          # Replace linux-tonome with stock linux kernel for CI
+          # (the real linux-tonome kernel is too heavy to build in CI)
+          sed -i 's/^linux-tonome/linux/' iso/archiso/packages.x86_64
+          sed -i '/^linux$/a nvidia-dkms' iso/archiso/packages.x86_64
+          echo "Packages for ISO:"
+          cat iso/archiso/packages.x86_64
           mkarchiso -v -w /work -o /output iso/archiso
 
       - name: Upload ISO
