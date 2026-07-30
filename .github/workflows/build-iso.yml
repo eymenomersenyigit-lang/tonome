@@ -149,7 +149,7 @@ jobs:
           mkdir -p "$session_pkg/usr/share/wayland-sessions"
           printf '[Desktop Entry]\nName=to[no]ME!\nComment=Tonome Desktop Session\nExec=/usr/bin/tonome-session\nType=Application\n' \
             > "$session_pkg/usr/share/wayland-sessions/tonome.desktop"
-          local session_size=$({ du -sb "$session_pkg" 2>/dev/null || stat --printf='%s' "$session_pkg"; } | awk '{print $1}')
+          session_size=$({ du -sb "$session_pkg" 2>/dev/null || stat --printf='%s' "$session_pkg"; } | awk '{print $1}')
           printf 'pkgname = tonome-session\npkgver = 0.1.0-1\npkgdesc = Tonome Desktop session manager\nurl = https://github.com/eymenomersenyigit-lang/tonome\nbuilddate = %d\npackager = Tonome CI\nsize = %s\narch = x86_64\nlicense = GPL3\ndepend = tonome-desktop\n' \
             "$(date +%s)" "$session_size" \
             > "$session_pkg/.PKGINFO"
