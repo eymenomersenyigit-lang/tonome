@@ -11,6 +11,5 @@ exec tonome-session
 
 # After desktop is ready, show the installer
 if pgrep -x "Tonome.Session" > /dev/null; then
-  # Launch installer in a terminal for simplicity
-  sudo -u live bash -c "calamares -d" &
+  sudo -u live bash -c "tonome-installer" &
 fi

@@ -2,7 +2,7 @@
 Type=Application
 Name=Install to[no]ME! OS
 Comment=Install to[no]ME! OS on your computer
-Exec=calamares -d
+Exec=/usr/bin/tonome-installer
 Icon=drive-harddisk
 Terminal=false
 Categories=System;Utility;

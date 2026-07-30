@@ -161,6 +161,28 @@ jobs:
           cd /tmp
           rm -rf "$session_pkg"
 
+          # --- Package: tonome-installer ---
+          installer_pkg="/tmp/pkg/tonome-installer"
+          rm -rf "$installer_pkg"
+          mkdir -p "$installer_pkg/usr/lib/tonome/installer"
+          cp -r build/installer/* "$installer_pkg/usr/lib/tonome/installer/"
+          mkdir -p "$installer_pkg/usr/bin"
+          printf '#!/bin/bash\nexec /usr/lib/tonome/installer/Tonome.Installer "$@"\n' \
+            > "$installer_pkg/usr/bin/tonome-installer"
+          chmod +x "$installer_pkg/usr/bin/tonome-installer"
+          mkdir -p "$installer_pkg/usr/share/applications"
+          printf '[Desktop Entry]\nName=Install to[no]ME!\nComment=Install to[no]ME! OS on your computer\nExec=/usr/bin/tonome-installer\nIcon=drive-harddisk\nTerminal=false\nCategories=System;\n' \
+            > "$installer_pkg/usr/share/applications/tonome-installer.desktop"
+          install_size=$({ du -sb "$installer_pkg" 2>/dev/null || stat --printf='%s' "$installer_pkg"; } | awk '{print $1}')
+          printf 'pkgname = tonome-installer\npkgver = 0.1.0-1\npkgdesc = to[no]ME! OS graphical installer\nurl = https://github.com/eymenomersenyigit-lang/tonome\nbuilddate = %d\npackager = Tonome CI\nsize = %s\narch = x86_64\nlicense = GPL3\n' \
+            "$(date +%s)" "$install_size" \
+            > "$installer_pkg/.PKGINFO"
+          cd "$installer_pkg"
+          tar --zstd -cf "/repo/tonome/x86_64/tonome-installer-0.1.0-1-x86_64.pkg.tar.zst" \
+            --owner=0 --group=0 .
+          cd /tmp
+          rm -rf "$installer_pkg"
+
           # Initialize repo database
           cd /repo/tonome/x86_64
           repo-add tonome.db.tar.gz *.pkg.tar.zst

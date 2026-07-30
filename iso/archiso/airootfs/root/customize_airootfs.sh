@@ -21,15 +21,15 @@ LIGHTDM
 
 # Installer desktop file for live user
 mkdir -p /home/live/.config/autostart
-cat > /home/live/.config/autostart/calamares.desktop << 'CALAMARES'
+cat > /home/live/.config/autostart/tonome-installer.desktop << 'INSTALLER'
 [Desktop Entry]
 Type=Application
 Name=Install to[no]ME!
-Exec=calamares -d
-Icon=system-software-install
+Exec=/usr/bin/tonome-installer
+Icon=drive-harddisk
 Terminal=false
 Categories=System;
-CALAMARES
+INSTALLER
 
 chown -R live:live /home/live
 
