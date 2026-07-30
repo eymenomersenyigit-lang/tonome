@@ -125,8 +125,11 @@ jobs:
 
             # Create the archive (archive contents, not the wrapping dir)
             cd "$pkgdir"
-            bsdtar --zstd -cf "/repo/tonome/x86_64/$pkgname-$pkgver-$pkgrel-x86_64.pkg.tar.zst" \
-              --uid=0 --gid=0 .
+            # Use dotglob + * to avoid ./ prefix on entries (pacman needs bare .PKGINFO)
+            shopt -s dotglob
+            bsdtar -cf "/repo/tonome/x86_64/$pkgname-$pkgver-$pkgrel-x86_64.pkg.tar.zst" \
+              --uid=0 --gid=0 *
+            shopt -u dotglob
             cd /tmp
             rm -rf "$pkgdir"
             cd "$GITHUB_WORKSPACE"
@@ -168,8 +171,10 @@ jobs:
             "$(date +%s)" "$session_size" \
             > "$session_pkg/.PKGINFO"
           cd "$session_pkg"
-          bsdtar --zstd -cf "/repo/tonome/x86_64/tonome-session-0.1.0-1-x86_64.pkg.tar.zst" \
-            --uid=0 --gid=0 .
+          shopt -s dotglob
+          bsdtar -cf "/repo/tonome/x86_64/tonome-session-0.1.0-1-x86_64.pkg.tar.zst" \
+            --uid=0 --gid=0 *
+          shopt -u dotglob
           cd /tmp
           rm -rf "$session_pkg"
 
