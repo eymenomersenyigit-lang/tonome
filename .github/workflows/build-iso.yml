@@ -122,10 +122,11 @@ jobs:
               mv "${pkgdir}.install" "$pkgdir/.INSTALL"
             fi
 
-            # Create the archive
-            cd /tmp/pkg
+            # Create the archive (archive contents, not the wrapping dir)
+            cd "$pkgdir"
             tar --zstd -cf "/repo/tonome/x86_64/$pkgname-$pkgver-$pkgrel-x86_64.pkg.tar.zst" \
-              --owner=0 --group=0 "$pkgname"
+              --owner=0 --group=0 .
+            cd /tmp
             rm -rf "$pkgdir"
             cd "$GITHUB_WORKSPACE"
           }
@@ -153,9 +154,10 @@ jobs:
           printf 'pkgname = tonome-session\npkgver = 0.1.0-1\npkgdesc = Tonome Desktop session manager\nurl = https://github.com/eymenomersenyigit-lang/tonome\nbuilddate = %d\npackager = Tonome CI\nsize = %s\narch = x86_64\nlicense = GPL3\ndepend = tonome-desktop\n' \
             "$(date +%s)" "$session_size" \
             > "$session_pkg/.PKGINFO"
-          cd /tmp/pkg
+          cd "$session_pkg"
           tar --zstd -cf "/repo/tonome/x86_64/tonome-session-0.1.0-1-x86_64.pkg.tar.zst" \
-            --owner=0 --group=0 "tonome-session"
+            --owner=0 --group=0 .
+          cd /tmp
           rm -rf "$session_pkg"
 
           # Initialize repo database
