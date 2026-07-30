@@ -41,10 +41,10 @@ cups
 cups-pdf
 
 # Gaming
-wine
-wine-mono
-wine-gecko
-steam
+# wine            # very large - uncomment for gaming ISO
+# wine-mono       # very large
+# wine-gecko      # very large
+# steam           # very large
 gamemode
 mangohud
 lutris
@@ -56,9 +56,9 @@ git
 base-devel
 
 # Office
-libreoffice-fresh
-firefox
-thunderbird
+# libreoffice-fresh  # very large - uncomment for full desktop ISO
+# firefox            # large
+# thunderbird        # large
 
 # System tools
 sudo
