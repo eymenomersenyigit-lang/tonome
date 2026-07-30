@@ -113,17 +113,9 @@ jobs:
 
             # Generate .PKGINFO
             local size=$({ du -sb "$pkgdir" 2>/dev/null || stat --printf='%s' "$pkgdir"; } | awk '{print $1}')
-            cat > "$pkgdir/.PKGINFO" <<EOF
-pkgname = $pkgname
-pkgver = $pkgver-$pkgrel
-pkgdesc = $pkgdesc
-url = https://github.com/eymenomersenyigit-lang/tonome
-builddate = $(date +%s)
-packager = Tonome CI
-size = $size
-arch = x86_64
-license = GPL3
-EOF
+            printf 'pkgname = %s\npkgver = %s-%s\npkgdesc = %s\nurl = https://github.com/eymenomersenyigit-lang/tonome\nbuilddate = %d\npackager = Tonome CI\nsize = %s\narch = x86_64\nlicense = GPL3\n' \
+              "$pkgname" "$pkgver" "$pkgrel" "$pkgdesc" "$(date +%s)" "$size" \
+              > "$pkgdir/.PKGINFO"
 
             # Create .INSTALL script if exists
             if [ -f "${pkgdir}.install" ]; then
@@ -151,36 +143,16 @@ EOF
           mkdir -p "$session_pkg/usr/lib/tonome/session"
           cp -r build/session/* "$session_pkg/usr/lib/tonome/session/"
           mkdir -p "$session_pkg/usr/bin"
-          cat > "$session_pkg/usr/bin/tonome-session" <<'SEOF'
-#!/bin/bash
-export XDG_SESSION_TYPE=wayland
-export XDG_SESSION_DESKTOP=tonome
-export XDG_CURRENT_DESKTOP=to[no]ME!
-export GTK_USE_PORTAL=1
-exec /usr/lib/tonome/session/Tonome.Session "$@"
-SEOF
+          printf '#!/bin/bash\nexport XDG_SESSION_TYPE=wayland\nexport XDG_SESSION_DESKTOP=tonome\nexport XDG_CURRENT_DESKTOP=to[no]ME!\nexport GTK_USE_PORTAL=1\nexec /usr/lib/tonome/session/Tonome.Session "$@"\n' \
+            > "$session_pkg/usr/bin/tonome-session"
           chmod +x "$session_pkg/usr/bin/tonome-session"
           mkdir -p "$session_pkg/usr/share/wayland-sessions"
-          cat > "$session_pkg/usr/share/wayland-sessions/tonome.desktop" <<'DEOF'
-[Desktop Entry]
-Name=to[no]ME!
-Comment=Tonome Desktop Session
-Exec=/usr/bin/tonome-session
-Type=Application
-DEOF
+          printf '[Desktop Entry]\nName=to[no]ME!\nComment=Tonome Desktop Session\nExec=/usr/bin/tonome-session\nType=Application\n' \
+            > "$session_pkg/usr/share/wayland-sessions/tonome.desktop"
           local session_size=$({ du -sb "$session_pkg" 2>/dev/null || stat --printf='%s' "$session_pkg"; } | awk '{print $1}')
-          cat > "$session_pkg/.PKGINFO" <<EOF
-pkgname = tonome-session
-pkgver = 0.1.0-1
-pkgdesc = Tonome Desktop session manager
-url = https://github.com/eymenomersenyigit-lang/tonome
-builddate = $(date +%s)
-packager = Tonome CI
-size = $session_size
-arch = x86_64
-license = GPL3
-depend = tonome-desktop
-EOF
+          printf 'pkgname = tonome-session\npkgver = 0.1.0-1\npkgdesc = Tonome Desktop session manager\nurl = https://github.com/eymenomersenyigit-lang/tonome\nbuilddate = %d\npackager = Tonome CI\nsize = %s\narch = x86_64\nlicense = GPL3\ndepend = tonome-desktop\n' \
+            "$(date +%s)" "$session_size" \
+            > "$session_pkg/.PKGINFO"
           cd /tmp/pkg
           tar --zstd -cf "/repo/tonome/x86_64/tonome-session-0.1.0-1-x86_64.pkg.tar.zst" \
             --owner=0 --group=0 "tonome-session"
