@@ -39,7 +39,7 @@ jobs:
 
       - name: Publish for Linux x64
         run: |
-          mkdir -p build/framework build/compositor build/shell build/settings build/session build/boot
+          mkdir -p build/framework build/compositor build/shell build/settings build/session build/boot build/installer
           dotnet publish src/Tonome.Framework \
             -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
             -o build/framework
@@ -58,6 +58,9 @@ jobs:
           dotnet publish src/Tonome.Boot \
             -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
             -o build/boot
+          dotnet publish src/Tonome.Installer \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/installer
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -86,17 +89,22 @@ jobs:
           path: build/
 
       - name: Build Arch Linux packages
+        shell: bash
         run: |
-          # Create local repo
+          set -e
+          cd "$GITHUB_WORKSPACE"
           mkdir -p /repo/tonome/x86_64
           for pkgdir in packages/*/; do
+            [ -d "$pkgdir" ] || continue
             (cd "$pkgdir" && makepkg -s --noconfirm)
             cp "$pkgdir"/*.pkg.tar.zst /repo/tonome/x86_64/
           done
           repo-add /repo/tonome/x86_64/tonome.db.tar.gz /repo/tonome/x86_64/*.pkg.tar.zst
 
       - name: Build ISO
+        shell: bash
         run: |
+          cd "$GITHUB_WORKSPACE"
           mkarchiso -v -w /work -o /output iso/archiso
 
       - name: Upload ISO

@@ -53,9 +53,9 @@ public class LiveWallpaperEngine
     {
         if (_backgroundImage != null)
         {
-            canvas.DrawBitmap(_backgroundImage,
-                new SKRect(0, 0, width, height),
-                new SKPaint { FilterQuality = SKFilterQuality.High });
+            using var bitmapPaint = new SKPaint { IsAntialias = true };
+        canvas.DrawBitmap(_backgroundImage,
+                new SKRect(0, 0, width, height), bitmapPaint);
             return;
         }
 
