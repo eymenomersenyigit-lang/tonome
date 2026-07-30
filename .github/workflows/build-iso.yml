@@ -77,7 +77,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm archiso git base-devel dotnet-sdk-9.0
+          pacman -Sy --noconfirm archiso git base-devel dotnet-sdk-9.0 grub syslinux
 
       - name: Checkout repository
         uses: actions/checkout@v4
