@@ -1,7 +1,7 @@
 # Base system
 base
 base-devel
-linux-tonome
+linux
 linux-firmware
 
 # Tonome Desktop
@@ -15,7 +15,7 @@ xorg-xwayland
 
 # Graphics
 mesa
-mesa-vulkan-drivers
+vulkan-mesa-layers
 vulkan-icd-loader
 vulkan-intel
 vulkan-radeon
@@ -45,8 +45,6 @@ wine
 wine-mono
 wine-gecko
 steam
-dxvk
-vkd3d-proton
 gamemode
 mangohud
 lutris
@@ -66,7 +64,7 @@ thunderbird
 sudo
 vim
 htop
-neofetch
+fastfetch
 terminator
 kitty
 bash-completion
@@ -84,8 +82,6 @@ syslinux
 
 # Installer
 calamares
-calamares-configs-tonome
-calamares-branding-tonome
 
 # Display manager
 lightdm

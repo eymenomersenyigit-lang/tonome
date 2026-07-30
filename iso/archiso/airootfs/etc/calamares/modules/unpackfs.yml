@@ -1,0 +1,11 @@
+# to[no]ME! Unpackfs Module
+unpack:
+  - source: "/run/archiso/bootmnt/arch/pkg/tonome-desktop-1.0.0-1-x86_64.pkg.tar.zst"
+    sourcefs: "file"
+    destination: "/"
+  - source: "/run/archiso/bootmnt/arch/pkg/tonome-session-1.0.0-1-x86_64.pkg.tar.zst"
+    sourcefs: "file"
+    destination: "/"
+  - source: "/run/archiso/bootmnt/arch/pkg/linux-tonome-6.6-1-x86_64.pkg.tar.zst"
+    sourcefs: "file"
+    destination: "/"

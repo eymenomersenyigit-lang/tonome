@@ -1,0 +1,20 @@
+# to[no]ME! Users Module
+defaultGroups:
+  - lp
+  - wheel
+  - network
+  - video
+  - audio
+  - optical
+  - storage
+  - power
+  - users
+  - input
+autologinGroup: ""
+doAutologin: false
+sudoersGroup: wheel
+setRootPassword: true
+passwordRequirementsMinLength: 1
+allowWeakPasswords: true
+allowWeakPasswordsDefault: true
+allowNoPasswords: false

@@ -171,10 +171,6 @@ jobs:
         run: |
           set -e
           cd "$GITHUB_WORKSPACE"
-          # Replace linux-tonome with stock linux kernel for CI
-          # (the real linux-tonome kernel is too heavy to build in CI)
-          sed -i 's/^linux-tonome/linux/' iso/archiso/packages.x86_64
-          sed -i '/^linux$/a nvidia-dkms' iso/archiso/packages.x86_64
           echo "Packages for ISO:"
           cat iso/archiso/packages.x86_64
           mkarchiso -v -w /work -o /output iso/archiso

@@ -1,0 +1,23 @@
+# to[no]ME! Branding
+componentName: tonome
+fullName: "to[no]ME!"
+shortName: "tonome"
+shortProductName: to[no]ME!
+version: "1.0.0"
+versionedName: "to[no]ME! 1.0.0"
+bootloaderEntryName: "to[no]ME!"
+productName: "to[no]ME! OS"
+productUrl: "https://tonome.dev"
+supportUrl: ""
+knownIssuesUrl: ""
+releaseNotesUrl: ""
+welcomeMessage: "Welcome to to[no]ME! OS"
+welcomeStyle: "sidebar"
+welcomeImage: ""
+strings:
+  productName: "to[no]ME!"
+  welcomeHeader: "Welcome to to[no]ME!"
+  welcomeMessage: "The privacy-focused desktop experience.\n\nThis installer will guide you through setting up to[no]ME! on your computer."
+  loadingMessage: "Setting up to[no]ME!..."
+  installFail: "Installation failed. Please check the logs."
+  installSuccess: "Installation complete! You may now restart your computer."

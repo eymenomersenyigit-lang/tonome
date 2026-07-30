@@ -1,0 +1,11 @@
+# to[no]ME! Display Manager Module
+displaymanagers:
+  - lightdm
+basicSetup: true
+defaultDesktopEnvironment:
+  executable: "tonome-session"
+  desktopFile: "tonome"
+lightdm:
+  enable: true
+  greeter: "lightdm-gtk-greeter"
+  greeter-session: "lightdm-gtk-greeter"
