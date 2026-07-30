@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+echo "to[no]ME! OS Live Environment"
+echo "============================="
+echo "You are now running to[no]ME! from the live ISO."
+echo "To install, click the 'Install to[no]ME!' icon on the desktop"
+echo "or run: calamares -d"
+echo ""
+echo "Default credentials:"
+echo "  User: live / Password: live"
+echo "  Root: root / Password: toor"

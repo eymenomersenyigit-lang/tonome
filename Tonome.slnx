@@ -4,6 +4,7 @@
     <Project Path="src/Tonome.Compositor/Tonome.Compositor.csproj" />
     <Project Path="src/Tonome.Demo/Tonome.Demo.csproj" />
     <Project Path="src/Tonome.Framework/Tonome.Framework.csproj" />
+    <Project Path="src/Tonome.Installer/Tonome.Installer.csproj" />
     <Project Path="src/Tonome.Session/Tonome.Session.csproj" />
     <Project Path="src/Tonome.Settings/Tonome.Settings.csproj" />
     <Project Path="src/Tonome.Shell/Tonome.Shell.csproj" />

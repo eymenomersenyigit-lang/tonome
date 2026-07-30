@@ -4,10 +4,15 @@ using Tonome.Framework.Theming;
 using Tonome.Framework.Input;
 using Tonome.Compositor;
 using Tonome.Compositor.Workspace;
+using Tonome.Shell;
+using Tonome.Shell.Panels;
+using Tonome.Shell.Dash;
+using Tonome.Shell.Launcher;
+using Tonome.Shell.Notifications;
 
 Console.WriteLine(@"  ╔══════════════════════════════════════════════╗
-  ║        to[no]ME! Session v0.1              ║
-  ║     Tonome Compositor + Shell Starting...   ║
+  ║        to[no]ME! Session v0.2              ║
+  ║     Tonome Desktop Environment Ready        ║
   ╚══════════════════════════════════════════════╝");
 
 var app = new TonomeApplication(1920, 1080, "to[no]ME! Desktop");
@@ -18,87 +23,79 @@ shortcuts.RegisterDefaultShortcuts();
 var compositor = new TonomeCompositor(app);
 var workspaceManager = new WorkspaceManager(4);
 
-var desktop = new Panel
+var panel = new SystemPanel
 {
+    DisplayWidth = 1920,
     Width = 1920,
-    Height = 1080,
-    BackgroundColor = new Tonome.Framework.Types.Color(20, 20, 30)
+    Height = 44
 };
 
-var dash = new Dash { ScreenWidth = 1920 };
-dash.AddAppIcon("Terminal");
-dash.AddAppIcon("Files");
-dash.AddAppIcon("Browser");
-dash.AddAppIcon("Settings");
-dash.AddAppIcon("Store");
+panel.AddTrayIcon("Network", "wifi");
+panel.AddTrayIcon("Sound", "volume");
+panel.AddTrayIcon("Battery", "battery");
 
-var infoWindow = new Window
+var dash = new AppDash { ScreenWidth = 1920 };
+dash.AddApp("Terminal", "", () => { });
+dash.AddApp("Files", "", () => { });
+dash.AddApp("Browser", "", () => { });
+dash.AddApp("Settings", "", () => { });
+dash.AddApp("Store", "", () => { });
+
+var launcher = new AppLauncher
 {
-    X = 100,
-    Y = 80,
-    Width = 420,
-    Height = 280,
-    CornerRadius = 16,
-    Title = "to[no]ME! Desktop",
-    GlassEnabled = true
+    ScreenWidth = 1920,
+    ScreenHeight = 1080
 };
+launcher.AddApp("Terminal", "System", () => { });
+launcher.AddApp("Files", "System", () => { });
+launcher.AddApp("Browser", "Internet", () => { });
+launcher.AddApp("Settings", "System", () => { });
+launcher.AddApp("Store", "System", () => { });
+launcher.AddApp("Calculator", "Utilities", () => { });
+launcher.AddApp("Calendar", "Office", () => { });
+launcher.AddApp("Text Editor", "Utilities", () => { });
 
-var welcomeLabel = new Label
+var notifications = new NotificationCenter { ScreenWidth = 1920 };
+
+var runDialog = new RunDialog
 {
-    Text = "Welcome to to[no]ME!",
-    TextSize = 20,
-    Bold = true,
-    X = 20, Y = 50,
-    Width = 380, Height = 28,
-    Center = true
+    ScreenWidth = 1920,
+    ScreenHeight = 1080
 };
 
-var infoLabel = new Label
-{
-    Text = "Tonome Compositor is running.\n\n" +
-           "• Super+R: Run dialog\n" +
-           "• Alt+Tab: 3D Window Switcher\n" +
-           "• Super+Tab: Desktop Switcher\n" +
-           "• Super+D: Show Desktop\n" +
-           "• Super+Q: Close Window\n" +
-           "• Super+Space: App Launcher",
-    TextSize = 13,
-    X = 20, Y = 85,
-    Width = 380, Height = 160
-};
+shortcuts.OnRunCommand += () => runDialog.Open();
+shortcuts.OnDesktopSwitch += () => Console.WriteLine("[Super+Tab] Desktop switcher");
+shortcuts.OnWindowSwitch += () => Console.WriteLine("[Alt+Tab] Window switcher");
+shortcuts.OnAppLauncher += () => launcher.Toggle();
+shortcuts.OnNotificationToggle += () => notifications.Toggle();
+shortcuts.OnSearch += (query) => launcher.Search(query);
 
-var closeBtn = new Button
-{
-    Text = "Close",
-    X = 310, Y = 230,
-    Width = 90, Height = 36,
-    CornerRadius = 10,
-    BackgroundColor = new Tonome.Framework.Types.Color(180, 40, 40)
-};
-closeBtn.OnClick += () => app.Window.Close();
-
-infoWindow.AddChild(welcomeLabel);
-infoWindow.AddChild(infoLabel);
-infoWindow.AddChild(closeBtn);
-
-var compositorWindowId = compositor.GetType().GetHashCode();
-desktop.AddChild(infoWindow);
-desktop.AddChild(dash);
-
-app.Renderer!.OnRender = (canvas, delta, w, h) =>
-{
-    desktop.Render(canvas, delta);
-};
+LiveWallpaperEngine? wallpaper = null;
 
 app.OnStarted += () =>
 {
     compositor.Start();
     Console.WriteLine($"Tonome Compositor started on {compositor.GetType().Name}");
+
+    wallpaper = new LiveWallpaperEngine(app.Renderer!);
+
+    app.Renderer!.OnRender = (canvas, delta, w, h) =>
+    {
+        wallpaper?.Render(canvas, w, h);
+        panel.Render(canvas, delta);
+        dash.Render(canvas, delta);
+        notifications.Render(canvas, delta);
+        launcher.Render(canvas, delta);
+        runDialog.Render(canvas, delta);
+    };
+
+    notifications.ShowNotification("Welcome", "to[no]ME! Desktop is ready", "System", false);
 };
 
 app.OnFrameUpdate += (delta) =>
 {
     workspaceManager.SwitchAnimation.Update(delta);
+    wallpaper?.Update((float)delta);
 };
 
 app.OnShutdown += () =>
@@ -106,10 +103,5 @@ app.OnShutdown += () =>
     compositor.Stop();
     Console.WriteLine("Tonome Session ended.");
 };
-
-shortcuts.OnRunCommand += () => Console.WriteLine("[Super+R] Run dialog");
-shortcuts.OnDesktopSwitch += () => Console.WriteLine("[Super+Tab] Desktop switcher");
-shortcuts.OnWindowSwitch += () => Console.WriteLine("[Alt+Tab] Window switcher");
-shortcuts.OnAppLauncher += () => Console.WriteLine("[Super+Space] App launcher");
 
 app.Run();

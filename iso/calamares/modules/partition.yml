@@ -1,0 +1,32 @@
+# to[no]ME! Auto Partition Module
+defaultFilesystemType: "btrfs"
+efiSystemPartitionSize: 512
+swap:
+  size: 4096
+  useSwap: true
+  allowSuspend: true
+userSwapChoices:
+  - none
+  - small
+  - suspend
+  - file
+initialPartitioningChoice: "erase"
+initialSwapChoice: "suspend"
+partitionLayout:
+  - name: "efi"
+    type: "512MiB"
+    filesystem: "fat32"
+    mountPoint: "/boot"
+  - name: "root"
+    type: "100%"
+    filesystem: "btrfs"
+    mountPoint: "/"
+    features: ["compress=zstd:3"]
+erase:
+  defaultFilesystemType: "btrfs"
+  efiSystemPartitionSize: 512
+  swap:
+    size: 8192
+    useSwap: true
+    allowSuspend: true
+  wholeDisk: true

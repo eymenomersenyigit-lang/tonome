@@ -1,0 +1,11 @@
+# to[no]ME! Calamares Welcome Module
+welcomeStyle: "sidebar"
+showSupportUrl: false
+showKnownIssuesUrl: false
+showReleaseNotesUrl: false
+showDonateUrl: false
+productUrl: "https://tonome.dev"
+releaseNotesUrl: ""
+knownIssuesUrl: ""
+supportUrl: ""
+branding: "tonome"

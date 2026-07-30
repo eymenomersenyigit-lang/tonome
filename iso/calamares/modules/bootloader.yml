@@ -1,0 +1,17 @@
+# to[no]ME! Bootloader Module
+loaderType: grub
+grubInstall: grub-install
+grubCfg: /boot/grub/grub.cfg
+grubMkconfig: grub-mkconfig
+efiBootloaderId: "tonome"
+kernel: /boot/vmlinuz-linux-tonome
+kernelParams:
+  - quiet
+  - splash
+  - loglevel=3
+  - udev.log_priority=3
+  - rd.systemd.show_status=false
+  - rd.udev.log_priority=3
+  - vt.global_cursor_default=0
+fallback: /boot/initramfs-linux-tonome-fallback.img
+timezone: UTC

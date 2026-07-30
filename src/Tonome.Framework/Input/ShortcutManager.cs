@@ -27,6 +27,8 @@ public class ShortcutManager
         Register("Super+D", () => OnShowDesktop?.Invoke());
         Register("Super+Q", () => OnCloseWindow?.Invoke());
         Register("Super+Space", () => OnAppLauncher?.Invoke());
+        Register("Super+N", () => OnNotificationToggle?.Invoke());
+        Register("Super+F", () => OnSearch?.Invoke(""));
     }
 
     public event Action? OnRunCommand;
@@ -35,4 +37,6 @@ public class ShortcutManager
     public event Action? OnShowDesktop;
     public event Action? OnCloseWindow;
     public event Action? OnAppLauncher;
+    public event Action? OnNotificationToggle;
+    public event Action<string>? OnSearch;
 }
