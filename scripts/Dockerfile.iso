@@ -1,0 +1,50 @@
+# Docker build environment for to[no]ME! Linux ISO
+# Usage: docker build -t tonome-iso -f scripts/Dockerfile.iso .
+#        docker run --rm -v $(pwd)/build/iso:/output tonome-iso
+
+FROM archlinux:latest AS builder
+
+# Install build dependencies
+RUN pacman -Sy --noconfirm \
+    archiso \
+    git \
+    base-devel \
+    dotnet-sdk-9.0 \
+    && pacman -Scc --noconfirm
+
+WORKDIR /build
+COPY . .
+
+# Build .NET projects
+RUN dotnet publish src/Tonome.Framework \
+    -c Release -r linux-x64 --self-contained true \
+    -o /build/output/framework && \
+    dotnet publish src/Tonome.Compositor \
+    -c Release -r linux-x64 --self-contained true \
+    -o /build/output/compositor && \
+    dotnet publish src/Tonome.Shell \
+    -c Release -r linux-x64 --self-contained true \
+    -o /build/output/shell && \
+    dotnet publish src/Tonome.Settings \
+    -c Release -r linux-x64 --self-contained true \
+    -o /build/output/settings && \
+    dotnet publish src/Tonome.Session \
+    -c Release -r linux-x64 --self-contained true \
+    -o /build/output/session && \
+    dotnet publish src/Tonome.Boot \
+    -c Release -r linux-x64 --self-contained true \
+    -o /build/output/boot
+
+# Create local package repository
+RUN mkdir -p /repo/tonome/x86_64 && \
+    for pkgdir in packages/*/; do \
+        (cd "$pkgdir" && makepkg -s --noconfirm); \
+        cp "$pkgdir"/*.pkg.tar.zst /repo/tonome/x86_64/ 2>/dev/null || true; \
+    done && \
+    repo-add /repo/tonome/x86_64/tonome.db.tar.gz /repo/tonome/x86_64/*.pkg.tar.zst 2>/dev/null || true
+
+# Build ISO
+RUN mkarchiso -v -w /work -o /output iso/archiso
+
+FROM scratch AS output
+COPY --from=builder /output/*.iso /

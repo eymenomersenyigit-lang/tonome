@@ -1,0 +1,86 @@
+# Base system
+base
+base-devel
+linux-tonome
+linux-firmware
+
+# Tonome Desktop
+tonome-desktop
+tonome-session
+
+# Display server
+wayland
+libxkbcommon
+xorg-xwayland
+
+# Graphics
+mesa
+mesa-vulkan-drivers
+vulkan-icd-loader
+vulkan-intel
+vulkan-radeon
+nvidia-dkms
+nvidia-utils
+
+# Sound
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+
+# Networking
+networkmanager
+dhcpcd
+
+# Bluetooth
+bluez
+bluez-utils
+
+# Printing
+cups
+cups-pdf
+
+# Gaming
+wine
+wine-mono
+wine-gecko
+steam
+dxvk
+vkd3d-proton
+gamemode
+mangohud
+lutris
+
+# Development
+dotnet-runtime-9.0
+dotnet-sdk-9.0
+git
+base-devel
+
+# Office
+libreoffice-fresh
+firefox
+thunderbird
+
+# System tools
+sudo
+vim
+htop
+neofetch
+terminator
+kitty
+bash-completion
+
+# File system
+btrfs-progs
+dosfstools
+exfat-utils
+ntfs-3g
+
+# Bootloader
+grub
+efibootmgr
+syslinux
+
+# Installer
+calamares

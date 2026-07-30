@@ -2,8 +2,8 @@ namespace Tonome.Framework.Animation;
 
 public class SpringAnimation
 {
-    public float Value { get; private set; }
-    public float Velocity { get; private set; }
+    public float Value { get; set; }
+    public float Velocity { get; set; }
     public float Target { get; set; }
     public float Stiffness { get; set; } = 180f;
     public float Damping { get; set; } = 12f;

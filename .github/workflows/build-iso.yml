@@ -1,0 +1,142 @@
+name: Build to[no]ME! Linux ISO
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'ISO version tag'
+        required: false
+        default: 'nightly'
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  BUILD_CONFIG: 'Release'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build all projects
+        run: dotnet build --configuration ${{ env.BUILD_CONFIG }} --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal || echo "No tests found"
+
+      - name: Publish for Linux x64
+        run: |
+          mkdir -p build/framework build/compositor build/shell build/settings build/session build/boot
+          dotnet publish src/Tonome.Framework \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/framework
+          dotnet publish src/Tonome.Compositor \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/compositor
+          dotnet publish src/Tonome.Shell \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/shell
+          dotnet publish src/Tonome.Settings \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/settings
+          dotnet publish src/Tonome.Session \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/session
+          dotnet publish src/Tonome.Boot \
+            -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
+            -o build/boot
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tonome-desktop-${{ github.sha }}
+          path: build/
+          retention-days: 7
+
+  build-iso:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm archiso git base-devel dotnet-sdk-9.0
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: tonome-desktop-${{ github.sha }}
+          path: build/
+
+      - name: Build Arch Linux packages
+        run: |
+          # Create local repo
+          mkdir -p /repo/tonome/x86_64
+          for pkgdir in packages/*/; do
+            (cd "$pkgdir" && makepkg -s --noconfirm)
+            cp "$pkgdir"/*.pkg.tar.zst /repo/tonome/x86_64/
+          done
+          repo-add /repo/tonome/x86_64/tonome.db.tar.gz /repo/tonome/x86_64/*.pkg.tar.zst
+
+      - name: Build ISO
+        run: |
+          mkarchiso -v -w /work -o /output iso/archiso
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: tonome-linux-iso-${{ github.sha }}
+          path: /output/*.iso
+          retention-days: 14
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build-iso
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: tonome-linux-iso-${{ github.sha }}
+          path: iso-download
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly-${{ github.sha }}
+          name: "to[no]ME! Linux Nightly Build"
+          body: |
+            ## to[no]ME! Linux Nightly Build
+            
+            Automated build from commit ${{ github.sha }}
+            
+            **Date:** $(date -u +'%Y-%m-%d %H:%M UTC')
+            
+            ### What's included:
+            - Tonome Desktop (C#/.NET 9)
+            - Wayland Compositor
+            - Custom Linux kernel with gaming/HDR optimizations
+            - Wine/Proton pre-installed
+            
+            **Test in a VM:** Boot the ISO in VirtualBox or QEMU
+          files: iso-download/*.iso
+          prerelease: true

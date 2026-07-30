@@ -1,0 +1,8 @@
+bin/
+obj/
+build/
+packages/*/*.pkg.tar.zst
+packages/*/src/
+.vs/
+.idea/
+*.user
