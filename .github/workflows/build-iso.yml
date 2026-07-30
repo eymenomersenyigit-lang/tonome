@@ -138,7 +138,7 @@ jobs:
             "build/settings" "/usr/lib/tonome/settings"
 
           # --- Package: tonome-session (with launcher) ---
-          local session_pkg="/tmp/pkg/tonome-session"
+          session_pkg="/tmp/pkg/tonome-session"
           rm -rf "$session_pkg"
           mkdir -p "$session_pkg/usr/lib/tonome/session"
           cp -r build/session/* "$session_pkg/usr/lib/tonome/session/"
