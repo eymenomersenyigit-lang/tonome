@@ -2,14 +2,6 @@
 # to[no]ME! live boot customization
 set -e
 
-# Start Calamares installer automatically in live mode
-cat > /etc/sddm.conf << 'SDDM'
-[Autologin]
-User=live
-Session=tonome.desktop
-Relogin=true
-SDDM
-
 # Create live user
 useradd -m -G wheel,audio,video,storage,power -s /bin/bash live
 echo "live:live" | chpasswd
@@ -18,7 +10,16 @@ echo "root:toor" | chpasswd
 # Sudo for live user
 echo "live ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/10-live
 
-# Start Calamares on first login
+# LightDM autologin for live user
+cat > /etc/lightdm/lightdm.conf << 'LIGHTDM'
+[Seat:*]
+autologin-user=live
+autologin-user-timeout=0
+user-session=tonome
+greeter-session=lightdm-gtk-greeter
+LIGHTDM
+
+# Installer desktop file for live user
 mkdir -p /home/live/.config/autostart
 cat > /home/live/.config/autostart/calamares.desktop << 'CALAMARES'
 [Desktop Entry]
