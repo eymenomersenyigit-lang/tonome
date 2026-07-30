@@ -80,8 +80,7 @@ grub
 efibootmgr
 syslinux
 
-# Installer
-tonome-installer
+# Installer (included in tonome-desktop)
 
 # Display manager
 lightdm
