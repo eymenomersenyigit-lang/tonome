@@ -93,6 +93,7 @@ reflector
 
 # Archiso initramfs hooks (required for live boot - generates initramfs that mounts the ISO)
 mkinitcpio-archiso
+mkinitcpio-nfs-utils
 
 # Fonts
 ttf-jetbrains-mono-nerd
