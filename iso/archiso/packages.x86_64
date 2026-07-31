@@ -91,6 +91,9 @@ lightdm-gtk-greeter-settings
 arch-install-scripts
 reflector
 
+# Archiso initramfs hooks (required for live boot - generates initramfs that mounts the ISO)
+mkinitcpio-archiso
+
 # Fonts
 ttf-jetbrains-mono-nerd
 ttf-font-awesome
