@@ -19,8 +19,6 @@ vulkan-mesa-layers
 vulkan-icd-loader
 vulkan-intel
 vulkan-radeon
-nvidia-dkms
-nvidia-utils
 
 # Sound
 pipewire
