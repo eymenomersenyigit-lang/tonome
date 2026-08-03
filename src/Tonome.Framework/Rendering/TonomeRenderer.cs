@@ -30,8 +30,16 @@ public class TonomeRenderer : IDisposable
         _fbWidth = (int)(_window.FramebufferSize.X / RenderScale);
         _fbHeight = (int)(_window.FramebufferSize.Y / RenderScale);
 
+        _fbWidth = Math.Max(1, _fbWidth);
+        _fbHeight = Math.Max(1, _fbHeight);
+
         var glInterface = GRGlInterface.Create();
+        if (glInterface is null)
+            throw new InvalidOperationException("SkiaSharp could not create an OpenGL interface (GRGlInterface.Create returned null).");
+
         _skiaContext = GRContext.CreateGl(glInterface);
+        if (_skiaContext is null)
+            throw new InvalidOperationException("SkiaSharp could not create an OpenGL context (GRContext.CreateGl returned null).");
 
         var glInfo = new GRGlFramebufferInfo(0, GetSkiaColorType().ToGlSizedFormat());
         _renderTarget = new GRBackendRenderTarget(
@@ -40,6 +48,10 @@ public class TonomeRenderer : IDisposable
         _skiaSurface = SKSurface.Create(
             _skiaContext, _renderTarget,
             GRSurfaceOrigin.BottomLeft, GetSkiaColorType());
+        if (_skiaSurface is null)
+            throw new InvalidOperationException("SkiaSharp could not create a GPU surface (SKSurface.Create returned null).");
+
+        TonomeApplication.Log($"Skia surface created: {_fbWidth}x{_fbHeight} (framebuffer {_window.FramebufferSize.X}x{_window.FramebufferSize.Y})");
     }
 
     private static SKColorType GetSkiaColorType() => SKColorType.Rgba8888;

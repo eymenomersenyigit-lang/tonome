@@ -160,7 +160,7 @@ jobs:
           mkdir -p "$session_pkg/usr/lib/tonome/session"
           cp -r build/session/* "$session_pkg/usr/lib/tonome/session/"
           mkdir -p "$session_pkg/usr/bin"
-          printf '#!/bin/bash\nexport XDG_SESSION_TYPE=wayland\nexport XDG_SESSION_DESKTOP=tonome\nexport XDG_CURRENT_DESKTOP=to[no]ME!\nexport GTK_USE_PORTAL=1\nexec /usr/lib/tonome/session/Tonome.Session "$@"\n' \
+          printf '#!/bin/bash\nexport XDG_SESSION_TYPE=x11\nexport XDG_SESSION_DESKTOP=tonome\nexport XDG_CURRENT_DESKTOP=to[no]ME!\nexport GTK_USE_PORTAL=1\nexport LIBGL_ALWAYS_SOFTWARE=1\nexport MESA_GL_VERSION_OVERRIDE=4.5\nexec /usr/lib/tonome/session/Tonome.Session "$@" >>"${HOME:-/tmp}/tonome-session.log" 2>&1\n' \
             > "$session_pkg/usr/bin/tonome-session"
           chmod +x "$session_pkg/usr/bin/tonome-session"
           mkdir -p "$session_pkg/usr/share/xsessions"
