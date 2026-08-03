@@ -24,7 +24,6 @@ public class TonomeCompositor : IDisposable
     public TonomeCompositor(TonomeApplication app)
     {
         _app = app;
-        _renderer = app.Renderer!;
 
         _wayland = new WaylandServer();
         _windowManager = new WindowManager();
@@ -37,12 +36,13 @@ public class TonomeCompositor : IDisposable
         _input.OnAltTab += OnAltTab;
         _input.OnSuperTab += OnSuperTab;
         _input.OnSuperR += OnSuperR;
-
-        _renderer.OnRender += RenderFrame;
     }
 
     public void Start()
     {
+        _renderer = _app.Renderer!;
+        _renderer.OnRender += RenderFrame;
+
         Running = true;
         _wayland.Start();
         _workspaceManager.SetActiveWorkspace(0);
