@@ -1,5 +1,6 @@
 ﻿using Tonome.Framework;
 using Tonome.Framework.Controls;
+using Tonome.Framework.Rendering;
 using Tonome.Framework.Theming;
 using Tonome.Framework.Input;
 using Tonome.Compositor;
@@ -96,6 +97,7 @@ try
     shortcuts.OnSearch += (query) => launcher.Search(query);
 
     LiveWallpaperEngine? wallpaper = null;
+    var bootSplash = new BootSplash();
 
     app.OnStarted += () =>
     {
@@ -107,11 +109,23 @@ try
         app.Renderer!.OnRender = (canvas, delta, w, h) =>
         {
             wallpaper?.Render(canvas, w, h);
-            panel.Render(canvas, delta);
-            dash.Render(canvas, delta);
-            notifications.Render(canvas, delta);
-            launcher.Render(canvas, delta);
-            runDialog.Render(canvas, delta);
+
+            Glass.BeginFrame(app.Renderer!.Surface, canvas);
+            try
+            {
+                if (!bootSplash.IsFinished)
+                    bootSplash.Render(canvas, w, h);
+
+                panel.Render(canvas, delta);
+                dash.Render(canvas, delta);
+                notifications.Render(canvas, delta);
+                launcher.Render(canvas, delta);
+                runDialog.Render(canvas, delta);
+            }
+            finally
+            {
+                Glass.EndFrame();
+            }
         };
 
         notifications.ShowNotification("Welcome", "to[no]ME! Desktop is ready", "System", false);

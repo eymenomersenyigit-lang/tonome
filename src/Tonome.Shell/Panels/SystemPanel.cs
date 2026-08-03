@@ -1,5 +1,6 @@
 using SkiaSharp;
 using Tonome.Framework.Controls;
+using Tonome.Framework.Rendering;
 using Tonome.Framework.Types;
 
 namespace Tonome.Shell.Panels;
@@ -75,20 +76,7 @@ public class SystemPanel : Panel
     public override void Render(SKCanvas canvas, double delta)
     {
         var rect = new SKRect(0, 0, Width, Height);
-        using var bgPaint = new SKPaint
-        {
-            Color = new SKColor(15, 15, 25, 200),
-            MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4),
-            IsAntialias = true
-        };
-        canvas.DrawRect(rect, bgPaint);
-
-        using var linePaint = new SKPaint
-        {
-            Color = new SKColor(255, 255, 255, 15),
-            StrokeWidth = 1
-        };
-        canvas.DrawLine(0, Height - 1, Width, Height - 1, linePaint);
+        Glass.DrawPanel(canvas, rect, 16, new SKColor(14, 14, 24), 195, 12f, borderAlpha: 45, sheenAlpha: 18);
 
         RenderAppMenu(canvas);
 

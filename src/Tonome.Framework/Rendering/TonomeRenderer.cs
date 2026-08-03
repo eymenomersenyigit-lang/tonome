@@ -78,6 +78,8 @@ public class TonomeRenderer : IDisposable
 
     public Action<SKCanvas, double, int, int>? OnRender { get; set; }
 
+    public SKSurface Surface => _skiaSurface;
+
     public void Resize(int width, int height)
     {
         _skiaSurface?.Dispose();

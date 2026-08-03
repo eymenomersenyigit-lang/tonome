@@ -1,4 +1,5 @@
 using SkiaSharp;
+using Tonome.Framework.Rendering;
 using Tonome.Framework.Types;
 
 namespace Tonome.Framework.Controls;
@@ -60,21 +61,7 @@ public abstract class Control
 
     protected void DrawGlassBackground(SKCanvas canvas, float blurSigma = 10f)
     {
-        using var paint = new SKPaint
-        {
-            Color = new SKColor(255, 255, 255, 30),
-            IsAntialias = true,
-            MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, blurSigma)
-        };
-        using var borderPaint = new SKPaint
-        {
-            Color = new SKColor(255, 255, 255, 40),
-            IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1
-        };
         var rect = new SKRect(AbsoluteX, AbsoluteY, AbsoluteX + Width, AbsoluteY + Height);
-        canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, paint);
-        canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, borderPaint);
+        Glass.Draw(canvas, rect, CornerRadius, new SKColor(20, 20, 34), 205, blurSigma, borderAlpha: 55, sheenAlpha: 22);
     }
 }
