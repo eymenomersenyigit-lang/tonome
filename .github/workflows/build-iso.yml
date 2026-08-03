@@ -62,6 +62,14 @@ jobs:
             -c ${{ env.BUILD_CONFIG }} -r linux-x64 --self-contained true \
             -o build/installer
 
+          # Ensure all generated Linux native executables have +x permission
+          chmod +x build/compositor/Tonome.Compositor \
+                   build/shell/Tonome.Shell \
+                   build/settings/Tonome.Settings \
+                   build/session/Tonome.Session \
+                   build/boot/Tonome.Boot \
+                   build/installer/Tonome.Installer 2>/dev/null || true
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
