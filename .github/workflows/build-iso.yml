@@ -163,9 +163,9 @@ jobs:
           printf '#!/bin/bash\nexport XDG_SESSION_TYPE=wayland\nexport XDG_SESSION_DESKTOP=tonome\nexport XDG_CURRENT_DESKTOP=to[no]ME!\nexport GTK_USE_PORTAL=1\nexec /usr/lib/tonome/session/Tonome.Session "$@"\n' \
             > "$session_pkg/usr/bin/tonome-session"
           chmod +x "$session_pkg/usr/bin/tonome-session"
-          mkdir -p "$session_pkg/usr/share/wayland-sessions"
-          printf '[Desktop Entry]\nName=to[no]ME!\nComment=Tonome Desktop Session\nExec=/usr/bin/tonome-session\nType=Application\n' \
-            > "$session_pkg/usr/share/wayland-sessions/tonome.desktop"
+          mkdir -p "$session_pkg/usr/share/xsessions"
+          printf '[Desktop Entry]\nName=to[no]ME!\nComment=Tonome Desktop Session\nExec=/usr/bin/tonome-session\nType=Application\nX-LightDM-Desktop-Name=Tonome\n' \
+            > "$session_pkg/usr/share/xsessions/tonome.desktop"
           session_size=$({ du -sb "$session_pkg" 2>/dev/null || stat --printf='%s' "$session_pkg"; } | awk '{print $1}')
           printf 'pkgname = tonome-session\npkgver = 0.1.0-1\npkgdesc = Tonome Desktop session manager\nurl = https://github.com/eymenomersenyigit-lang/tonome\nbuilddate = %d\npackager = Tonome CI\nsize = %s\narch = x86_64\nlicense = GPL3\ndepend = tonome-desktop\n' \
             "$(date +%s)" "$session_size" \

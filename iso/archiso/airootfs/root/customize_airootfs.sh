@@ -4,6 +4,8 @@ set -e
 
 # Create live user
 useradd -m -G wheel,audio,video,storage,power -s /bin/bash live
+# Arch lightdm PAM requires autologin (and nopasswdlogin) groups for passwordless login
+usermod -aG autologin,nopasswdlogin live
 echo "live:live" | chpasswd
 echo "root:toor" | chpasswd
 
@@ -35,5 +37,6 @@ chown -R live:live /home/live
 
 # Enable services
 systemctl enable lightdm
+systemctl enable accounts-daemon
 systemctl enable NetworkManager
 systemctl enable bluetooth

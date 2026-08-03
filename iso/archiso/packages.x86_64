@@ -86,6 +86,8 @@ syslinux
 lightdm
 lightdm-gtk-greeter
 lightdm-gtk-greeter-settings
+accountsservice
+xorg-server
 
 # Live tools
 arch-install-scripts
