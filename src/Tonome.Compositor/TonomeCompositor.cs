@@ -16,7 +16,7 @@ public class TonomeCompositor : IDisposable
     private readonly CompositorEffects _effects;
     private readonly CompositorInput _input;
     private readonly OutputManager _output;
-    private readonly TonomeRenderer _renderer;
+    private TonomeRenderer? _renderer;
     private readonly TonomeApplication _app;
 
     public bool Running { get; private set; }
